@@ -47,3 +47,4 @@ while main_link:
 
 # Close the CSV file
 csv_file.close()
+print("done.")
