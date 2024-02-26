@@ -1,34 +1,47 @@
+# Import necessary libraries
 from bs4 import BeautifulSoup
 import requests
 import csv
 
-csv_file=open("books.csv","w")
-csv_writter=csv.writer(csv_file)
-csv_writter.writerow(["Ttile","Price","Availibility"])
+# Create a CSV file for storing book data
+csv_file = open("books.csv", "w")
+csv_writer = csv.writer(csv_file)
+csv_writer.writerow(["Title", "Price", "Availability"])
 
-main_link="https://books.toscrape.com"
-add="https://books.toscrape.com/"
-added=""
+# Initialize the main link and other variables
+main_link = "https://books.toscrape.com"
+add = "https://books.toscrape.com/"
+added = ""
 
-while(main_link):
-    page=requests.get(main_link)
-    soup=BeautifulSoup(page.text,"lxml")
-    link_list=soup.find_all("h3")
-    links=[add+link.a["href"] for link in link_list]
-    
+# Loop through pages to scrape book data
+while main_link:
+    # Fetch the HTML content of the current page
+    page = requests.get(main_link)
+    soup = BeautifulSoup(page.text, "lxml")
+
+    # Extract links to individual book pages
+    link_list = soup.find_all("h3")
+    links = [add + link.a["href"] for link in link_list]
+
+    # Process each book page
     for link in links:
-        book=requests.get(link)
-        book_soup=BeautifulSoup(book.text,"lxml")
-        title=book_soup.find("h1").text
-        price=book_soup.find("p",class_="price_color").text.strip()[1::]
-        availbilty=book_soup.find("p",class_="instock availability").text.strip()
-  
-        csv_writter.writerow([title,price,availbilty])
+        book = requests.get(link)
+        book_soup = BeautifulSoup(book.text, "lxml")
 
-    next=soup.find("li",class_="next")
-    next_link=next.a["href"]
-    main_link="https://books.toscrape.com/"+added+next_link
-    add="https://books.toscrape.com/catalogue/"
-    added="catalogue/"
+        # Extract title, price, and availability
+        title = book_soup.find("h1").text
+        price = book_soup.find("p", class_="price_color").text.strip()[1:]
+        availability = book_soup.find("p", class_="instock availability").text.strip()
 
+        # Write data to the CSV file
+        csv_writer.writerow([title, price, availability])
+
+    # Move to the next page (if available)
+    next_page = soup.find("li", class_="next")
+    next_link = next_page.a["href"]
+    main_link = "https://books.toscrape.com/" + added + next_link
+    add = "https://books.toscrape.com/catalogue/"
+    added = "catalogue/"
+
+# Close the CSV file
 csv_file.close()
