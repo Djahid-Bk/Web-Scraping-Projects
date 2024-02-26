@@ -14,6 +14,8 @@ add = "https://books.toscrape.com/"
 added = ""
 
 # Loop through pages to scrape book data
+print("scraping...")
+
 while main_link:
     # Fetch the HTML content of the current page
     page = requests.get(main_link)
