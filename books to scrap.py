@@ -4,7 +4,7 @@ import requests
 import csv
 
 # Create a CSV file for storing book data
-csv_file = open("books.csv", "w")
+csv_file = open("books.csv", "w",encoding="utf-8")
 csv_writer = csv.writer(csv_file)
 csv_writer.writerow(["Title", "Price", "Availability"])
 
@@ -12,7 +12,7 @@ csv_writer.writerow(["Title", "Price", "Availability"])
 main_link = "https://books.toscrape.com"
 add = "https://books.toscrape.com/"
 added = ""
-
+i=0
 # Loop through pages to scrape book data
 print("scraping...")
 
@@ -39,11 +39,18 @@ while main_link:
         csv_writer.writerow([title, price, availability])
 
     # Move to the next page (if available)
+        
     next_page = soup.find("li", class_="next")
-    next_link = next_page.a["href"]
-    main_link = "https://books.toscrape.com/" + added + next_link
+    if next_page and next_page.a:
+        next_link = next_page.a["href"]
+        main_link = "https://books.toscrape.com/" + added + next_link
+    else:
+        main_link=None
+    
     add = "https://books.toscrape.com/catalogue/"
     added = "catalogue/"
+    i=i+1
+    print(f"pages scraped: {i}")
 
 # Close the CSV file
 csv_file.close()
